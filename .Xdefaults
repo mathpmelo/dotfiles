@@ -21,7 +21,7 @@
 
 
 !!URxvt.depth:		32
-URxvt.font: 		xft:envypn:size=11
+URxvt.font: 		xft:envypn:size=11,xft:Hasklug Nerd Font Mono:style=Regular
 !!URxvt*font: 		xft:Hasklug Nerd Font Mono:size=9
 URxvt.scrollBar:	false
 URxvt.cursorColor:	white
