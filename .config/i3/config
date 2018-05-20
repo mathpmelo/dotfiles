@@ -14,15 +14,29 @@
 
 # Be sure that you have your $BROWSER environmental variable set to your favorite browser.
 # E.g., put `export BROWSER="firefox"` into your bash_profile
+##### COLORS #######################################
+
+# CLASS                 BORDER  BACK    TEXT    INDICATOR
+client.focused          #282a36 #282a36 #282a36 #282a36
+client.focused_inactive #282a36 #282a36 #282a36 #282a36
+client.unfocused        #282a36 #282a36 #282a36 #282a36
+client.urgent           #282a36 #282a36 #282a36 #282a36
+client.placeholder      #282a36 #282a36 #282a36 #282a36
+
+client.background       #282a36
+
 
 # #---Basic Definitions---# #
+
 #Needed for i3-gaps
-for_window [class="^.*"] border pixel 3
+for_window [class="^.*"] border pixel 0
+for_window [title="^.*"] border pixel 0
+for_window [class="URxvt"] border pixel 24
 gaps inner 12
 gaps outer 8
 font pango:mono 9, FontAwesome 8
 set $mod Mod4
-set $term --no-startup-id urxvt
+set $term --no-startup-id urxvtc
 set $video --no-startup-id bash video.sh
 set $stoprec --no-startup-id killall ffmpeg
 
@@ -59,7 +73,7 @@ exec --no-startup-id xset r rate 300 50
 #exec --no-startup-id mpd
 #exec --no-startup-id mopidy
 #URXVT Daemon
-#exec --no-startup-id urxvtd
+exec --no-startup-id urxvtd
 #Torrent daemon:
 exec --no-startup-id transmission-daemon
 #Mount other drives:
@@ -71,6 +85,7 @@ exec --no-startup-id screen.sh v
 #Launch Polybar where appropriate:
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 #Add wallpaper:
+exec_always --no-startup-id hsetroot -add "#6272a4" -add "#bd93f9" -gradient 45
 #exec_always --no-startup-id feh --bg-scale ~/.config/wall.png
 #Runs the key remapping scripts
 exec --no-startup-id ~/.scripts/remaps
