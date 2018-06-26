@@ -14,7 +14,8 @@
 
 # Be sure that you have your $BROWSER environmental variable set to your favorite browser.
 # E.g., put `export BROWSER="firefox"` into your bash_profile
-##### COLORS #######################################
+
+##### COLORS FOR BORDERS #######################################
 
 # CLASS                 BORDER  BACK    TEXT    INDICATOR
 client.focused          #282a36 #282a36 #282a36 #282a36
@@ -23,7 +24,8 @@ client.unfocused        #282a36 #282a36 #282a36 #282a36
 client.urgent           #282a36 #282a36 #282a36 #282a36
 client.placeholder      #282a36 #282a36 #282a36 #282a36
 
-client.background       #282a36
+#client.background       #282a36
+client.background       #ffffff
 
 
 # #---Basic Definitions---# #
@@ -32,8 +34,8 @@ client.background       #282a36
 for_window [class="^.*"] border pixel 0
 for_window [title="^.*"] border pixel 0
 for_window [class="URxvt"] border pixel 24
-gaps inner 12
-gaps outer 8
+gaps inner 17
+gaps outer 10
 font pango:mono 9, FontAwesome 8
 set $mod Mod4
 set $term --no-startup-id urxvtc
@@ -85,7 +87,7 @@ exec --no-startup-id screen.sh v
 #Launch Polybar where appropriate:
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 #Add wallpaper:
-exec_always --no-startup-id hsetroot -add "#6272a4" -add "#bd93f9" -gradient 45
+exec_always --no-startup-id hsetroot -add "#6272a4" -add "#680101" -gradient 45
 #exec_always --no-startup-id feh --bg-scale ~/.config/wall.png
 #Runs the key remapping scripts
 exec --no-startup-id ~/.scripts/remaps
@@ -230,10 +232,10 @@ bindsym $mod+Shift+p		exec mypaint
 #bindsym $mod+a			[instance="math"] scratchpad show; [instance="math"] move position center
 bindsym $mod+Shift+a		exec $term -e ncpamixer
 
-bindsym $mod+s			gaps inner current plus 5
-bindsym $mod+Shift+s		gaps inner current minus 5
+bindsym $mod+s			gaps inner current plus 2
+bindsym $mod+Shift+s		gaps inner current minus 2
 
-bindsym $mod+d			exec rofi -show run
+bindsym $mod+d			exec rofi -show-icons -show drun
 bindsym $mod+Shift+d		gaps inner current set 0; gaps outer current set 0
 
 bindsym $mod+f			fullscreen toggle
@@ -298,7 +300,7 @@ bindsym $mod+XF86Forward	workspace next
 ##bindsym $mod+Shift+XF86Forward
 bindsym $mod+semicolon		workspace next
 bindsym $mod+apostrophe		split horizontal ;; exec $term
-bindsym $mod+slash		split vertical ;; exec $term
+#bindsym $mod+slash		split vertical ;; exec $term
 bindsym $mod+Shift+slash	kill
 bindsym $mod+backslash		workspace back_and_forth
 
@@ -313,7 +315,17 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-
+#Specify which monitor the workspace should be
+workspace 1 output LVDS1
+workspace 2 output LVDS1
+workspace 3 output LVDS1
+workspace 4 output LVDS1
+workspace 5 output LVDS1
+workspace 6 output LVDS1
+workspace 7 output VGA1
+workspace 8 output VGA1
+workspace 9 output VGA1
+workspace 10 output VGA1
 # switch to workspace
 bindsym $mod+1		workspace $ws1
 bindsym $mod+2		workspace $ws2
@@ -518,4 +530,3 @@ bindsym XF86Documents		exec $term -e ranger ~/Documents
 bindsym XF86WLAN		exec $netrefresh
 
 
-for_window [instance="term2"] exec jokes.sh

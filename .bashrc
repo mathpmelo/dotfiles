@@ -2,11 +2,14 @@ stty -ixon
 shopt -s autocd #Allows you to cd into directory merely by typing the directory name.
 
 # Setting Bash prompt. Capitalizes username and host if root user (my root user uses this same config file).
-if [ "$EUID" -ne 0 ]
-	then export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]\u\[$(tput setaf 2)\]@\[$(tput setaf 4)\]\h \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
-	else export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]ROOT\[$(tput setaf 2)\]@\[$(tput setaf 4)\]$(hostname | awk '{print toupper($0)}') \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
-fi
+#if [ "$EUID" -ne 0 ]
+#	then export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]\u\[$(tput setaf 2)\]@\[$(tput setaf 4)\]\h \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
+#	else export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]ROOT\[$(tput setaf 2)\]@\[$(tput setaf 4)\]$(hostname | awk '{print toupper($0)}') \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
+#fi
 
+# Set colors for bash prompt, i don't have a setting for root user to remember me that i am using root
+
+PS1="┌─[\`if [ \$? = 0 ]; then echo \[\e[32m\]✔\[\e[0m\]; else echo \[\e[31m\]✘\[\e[0m\]; fi\`]───[\[\e[01;31m\]\u\[\e[00m\]\[\e[01;32m\]@\H\[\e[00m\]]───[\[\e[1;49;34m\]\W\[\e[0m\]]───[\[\e[1;49;39m\]\$(ls | wc -l) files, \$(ls -lah | grep -m 1 total | sed 's/total //')\[\e[0m\]]\n└───▶ "
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
 # ( ) # Hide shell job control messages.
@@ -14,8 +17,7 @@ fi
 
 # Alternative (blocks terminal for 0-3ms)
 #cat ~/.cache/wal/sequences
-
-# To add support for TTYs this line can be optionally added.
+#To add support for TTYs this line can be optionally added.
 #source ~/.cache/wal/colors-tty.sh
 
 #Generic shortcuts:
@@ -105,5 +107,13 @@ alias lilfor="mpc seek +10"
 alias bigbak="mpc seek -120"
 alias bigfor="mpc seek +120"
 
-hello-larbs() { sed -i -e '/LARBS/,$d' ~/.config/i3/config ;}
+#Alias for git repo with dotfiles
+alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 source /home/matheus/.bash_shortcuts
+
+#env variables for Android/Cordova stuff
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+
+#Alias for sudoing the previous command
+alias fuck='sudo $(history -p !!)'
