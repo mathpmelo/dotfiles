@@ -1,4 +1,4 @@
-# vim: filetype=i3
+#vim: filetype=i3
 #  _          _          ____            _ _   _     _       _ _____    ____             __ _
 # | |   _   _| | _____  / ___| _ __ ___ (_) |_| |__ ( )___  (_)___ /   / ___|___  _ __  / _(_) __ _
 # | |  | | | | |/ / _ \ \___ \| '_ ` _ \| | __| '_ \|// __| | | |_ \  | |   / _ \| '_ \| |_| |/ _` |
@@ -15,80 +15,49 @@
 # Be sure that you have your $BROWSER environmental variable set to your favorite browser.
 # E.g., put `export BROWSER="firefox"` into your bash_profile
 
-##### COLORS FOR BORDERS #######################################
-
-# CLASS                 BORDER  BACK    TEXT    INDICATOR
-client.focused          #282a36 #282a36 #282a36 #282a36
-client.focused_inactive #282a36 #282a36 #282a36 #282a36
-client.unfocused        #282a36 #282a36 #282a36 #282a36
-client.urgent           #282a36 #282a36 #282a36 #282a36
-client.placeholder      #282a36 #282a36 #282a36 #282a36
-
-#client.background       #282a36
-client.background       #ffffff
-
-
 # #---Basic Definitions---# #
-
 #Needed for i3-gaps
 for_window [class="^.*"] border pixel 0
-for_window [title="^.*"] border pixel 0
-for_window [class="URxvt"] border pixel 24
-gaps inner 17
-gaps outer 10
-font pango:mono 9, FontAwesome 8
+for_window [class="St"] border pixel 22
+#Move programs to specific workspaces
+for_window [class="Firefox"] move workspace $ws2
+for_window [class="oni"] move workspace $ws1
+gaps inner 10
+gaps outer 5
+font pango:mono 12
 set $mod Mod4
-set $term --no-startup-id urxvtc
-set $video --no-startup-id bash video.sh
-set $stoprec --no-startup-id killall ffmpeg
+set $term --no-startup-id st -f 'envypn'
+set $stoprec --no-startup-id killrecording
+exec --no-startup-id rm -f ~/.larbs/.recording
 
-############################################################################################################################
-## Starting apps at specific workspaces at startup
-#exec --no-startup-id i3-msg "workspace 1; append_layout ~/.config/i3/workspace1.json"
-#exec --no-startup-id i3-msg "workspace 2; append_layout ~/.config/i3/workspace2.json"
-#exec --no-startup-id i3-msg "workspace 4; append_layout ~/.config/i3/workspace4.json"
+#Wal color stuff
+set_from_resource $fg i3wm.color7 #f0f0f0
+set_from_resource $bg i3wm.color0 #f0f0f0
 
+# class                 border  backgr. text indicator child_border
+client.focused          $bg     $bg     $fg  $bg       $bg
+client.focused_inactive $bg     $bg     $fg  $bg       $bg
+client.unfocused        $bg     $bg     $fg  $bg       $bg
+client.urgent           $bg     $bg     $fg  $bg       $bg
+client.placeholder      $bg     $bg     $fg  $bg       $bg
 
-exec_always --no-startup-id urxvt -name dropdown -e tmuxinit
-#exec --no-startup-id i3-msg 'workspace 2; exec qutebrowser'
-#exec --no-startup-id exec urxvt -name term1
-#exec --no-startup-id exec urxvt -name term2 -e htop
-#exec --no-startup-id exec urxvt -name cmatrix -e cmatrix
-#exec --no-startup-id exec urxvt -name cow -hold -e testeurxvt.sh
-#exec --no-startup-id exec urxvt -name pipes -e pipes
-#Launch dropdown
-
-#exec --no-startup-id urxvtc -name ncmpcpp -e ncmpcpp
-#exec --no-startup-id urxvtc -name cava -e cava -p ~/.cavaconf
-
-#exec --no-startup-id qutebrowser
+client.background       $bg
 
 
-
-############################################################################################################################
-
-exec --no-startup-id setxkbmap us -option 'grp:sclk_toggle'
-# #---Starting External Scripts---# #
-#Increase key rate
-exec --no-startup-id xset r rate 300 50
+#Daemon for urxvt
+#exec --no-startup-id urxvtd
+#Setting the background:
+exec_always --no-startup-id feh --bg-scale ~/.config/wall.png
+#Starts dunst for notifications:
+exec --no-startup-id dunst
 #Music player daemon:
-#exec --no-startup-id mpd
-#exec --no-startup-id mopidy
-#URXVT Daemon
-exec --no-startup-id urxvtd
+exec --no-startup-id mpd
 #Torrent daemon:
 exec --no-startup-id transmission-daemon
-#Mount other drives:
-exec --no-startup-id sudo mount -a
 #Composite manager:
 exec --no-startup-id "compton -b --config ~/.config/compton.conf"
-#Try to load VGA screen if available:
-exec --no-startup-id screen.sh v
 #Launch Polybar where appropriate:
-exec_always --no-startup-id ~/.config/polybar/launch.sh
-#Add wallpaper:
-exec_always --no-startup-id hsetroot -add "#6272a4" -add "#680101" -gradient 45
-#exec_always --no-startup-id feh --bg-scale ~/.config/wall.png
+#exec_always --no-startup-id ~/.scripts/polybar_launch
 #Runs the key remapping scripts
 exec --no-startup-id ~/.scripts/remaps
 #Unclutter makes the mouse invisible after a brief period
@@ -96,6 +65,17 @@ exec --no-startup-id unclutter
 #Network Manager applet
 exec --no-startup-id nm-applet
 
+bar {
+	status_command i3blocks
+	position top
+	mode dock
+	modifier None
+}
+# Run the script to update the mpd i3block on change.
+exec --no-startup-id "pgrep i3mpdupdate || i3mpdupdate"
+
+#Increse key rate
+exec --no-startup-id xset r rate 300 30
 #OPENRC
 #set $shutdown sudo openrc-shutdown -p
 #set $reboot sudo openrc-shutdown -r
@@ -110,138 +90,76 @@ exec --no-startup-id nm-applet
 set $shutdown sudo shutdown -h now
 set $reboot sudo reboot
 set $netrefresh --no-startup-id sudo systemctl restart NetworkManager
-
-# #---Audio and Music Definitions---# #
-
-##For spotify
-#set $music spotify
-#set $pause dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
-#set $trupause dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Pause
-#set $play dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Play
-#set $next dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next
-#set $prev dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous
-#set $lilfor dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Seek
-#set $bigfor dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Seek(
-
-# For mpc:
-set $music --no-startup-id urxvt -e ncmpcpp
-set $pause --no-startup-id mpc toggle
-set $trupause --no-startup-id mpc pause
-set $next --no-startup-id mpc next
-set $prev --no-startup-id mpc prev
-set $lilfor --no-startup-id mpc seek +10
-set $bigfor --no-startup-id mpc seek +120
-set $lilbak --no-startup-id mpc seek -10
-set $bigbak --no-startup-id mpc seek -120
-set $beg --no-startup-id mpc seek 0%
-
-# For moc:
-#set $music --no-startup-id st -e mocp
-#set $pause --no-startup-id mocp -G
-#set $truepause --no-startup-id mocp -P
-#set $next --no-startup-id mocp -f
-#set $prev --no-startup-id mocp -r
-#set $lilfor --no-startup-id mocp -k 10
-#set $bigfor --no-startup-id mocp -k 120
-#set $lilbak --no-startup-id mocp -k -10
-#set $bigbak --no-startup-id mocp -k -120
-#set $beg --no-startup-id mocp -j 0%
-
-# For cmus:
-#set $music --no-startup-id st -e cmus
-#set $pause --no-startup-id cmus-remote -u
-#set $next --no-startup-id cmus-remote -n
-#set $prev --no-startup-id cmus-remote -r
-#set $lilfor --no-startup-id cmus-remote -k +10
-#set $bigfor --no-startup-id cmus-remote -k +120
-#set $lilbak --no-startup-id cmus-remote -k -10
-#set $bigbak --no-startup-id cmus-remote -k -120
-#set $beg --no-startup-id cmus-remote -k 00:00:00
-
-#FOR ALSA/AMIXER
-#set $inc --no-startup-id amixer sset Master 2%+
-#set $biginc --no-startup-id amixer sset Master 5%+
-#set $dec --no-startup-id amixer sset Master 2%-
-#set $bigdec --no-startup-id amixer sset Master 5%-
-#set $mute --no-startup-id amixer sset Master toggle
-#set $truemute --no-startup-id amixer sset Master mute
-#set $screencast  --no-startup-id bash screencast_alsa.sh
-#set $audio --no-startup-id bash audio_alsa.sh
-
-#For PULSEAUDIO/PAMIXER
-set $inc --no-startup-id pamixer --allow-boost -i 5
-set $biginc --no-startup-id pamixer --allow-boost -i 15
-set $dec --no-startup-id pamixer --allow-boost -d 5
-set $bigdec --no-startup-id pamixer --allow-boost -d 15
-set $mute --no-startup-id pamixer --allow-boost -t
-set $micmute --no-startup-id pamixer --allow-boost -t
-set $truemute --no-startup-id pamixer -m
-set $screencast  --no-startup-id bash screencast_pulse.sh
-set $audio --no-startup-id bash audio_pulse.sh
+set $hibernate sudo systemctl suspend
 
 # #---Basic Bindings---# #
 bindsym $mod+Return 		exec $term
-bindsym $mod+Shift+Return 	exec $term -e vim ~/vimwiki/index.wiki
+##bindsym $mod+Shift+Return
 
 bindsym $mod+Shift+space 	floating toggle
 bindsym $mod+space		focus mode_toggle
 
 bindsym $mod+Escape		workspace prev
-bindsym $mod+Shift+Escape 	exec i3-msg exit
+bindsym $mod+Shift+Escape 	exec --no-startup-id prompt "Are you sure you want to leave i3?" "i3-msg exit"
 
 # bindsym $mod+BackSpace
-bindsym $mod+Shift+BackSpace	exec $reboot
+bindsym $mod+Shift+BackSpace	exec --no-startup-id prompt "Are you sure you want to reboot?" "$reboot"
 
-# bindsym $mod+grave
+##bindsym $mod+grave
 ##bindsym $mod+asciitilde
 
 #STOP/HIDE EVERYTHING:
-bindsym $mod+Shift+Delete	exec $truemute ; exec $truepause ; workspace lmao ; exec $term -e htop ; exec $term -e ranger
+bindsym $mod+Shift+Delete	exec --no-startup-id lmc truemute ; exec $truepause ; workspace lmao ; exec $term -e htop ; exec $term -e ranger
 
 # #---Letter Key Bindings---# #
 #bindsym $mod+q			kill
 bindsym $mod+Shift+q		kill
 
-#bindsym $mod+w			exec $term -e sudo wifi-menu
-bindsym $mod+Shift+w		exec --no-startup-id $BROWSER
+bindsym $mod+w                  [class="Whatsie"] scratchpad show
+bindsym $mod+Shift+w		exec --no-startup-id whatsie
+for_window [class="Whatsie"] move window to scratchpad
 
-#bindsym $mod+e			exec $term -e neomutt
-##bindsym $mod+Shift+e
+bindsym $mod+Shift+m		exec $term -e neomutt
+
+#Make the currently focused window a scratchpad
+bindsym $mod+e			[con_mark="aux_scratchpad"] scratchpad show
+bindsym $mod+Shift+e		mark "aux_scratchpad" move scratchpad
 
 bindsym $mod+r 			exec $term -e ranger
 bindsym $mod+Shift+r		exec $term -e sudo ranger /
 
 bindsym $mod+t			split toggle
-bindsym $mod+Shift+t		gaps inner current set 15; gaps outer current set 15
+bindsym $mod+Shift+t		gaps inner current set 10; gaps outer current set 5
 
 bindsym $mod+y			exec $term -e calcurse
-bindsym $mod+Shift+y		resize shrink width 10 px or 10ppt
+bindsym $mod+Shift+y		exec --no-startup-id "bash ~/.scripts/i3resize left"
 
 bindsym $mod+u			[instance="dropdown"] scratchpad show; [instance="dropdown"] move position center
-bindsym $mod+Shift+u		resize shrink height 10 px or 10 ppt
+bindsym $mod+Shift+u		exec --no-startup-id "bash ~/.scripts/i3resize down"
 
 bindsym $mod+i 			exec $term -e htop
-bindsym $mod+Shift+i		resize grow height 10 px or 10 ppt
+bindsym $mod+Shift+i		exec --no-startup-id "bash ~/.scripts/i3resize up"
 
 bindsym $mod+o			sticky toggle
-bindsym $mod+Shift+o		resize grow width 10 px or 10 ppt
+bindsym $mod+Shift+o		exec --no-startup-id "bash ~/.scripts/i3resize right"
 
-bindsym $mod+p			exec $pause
-bindsym $mod+Shift+p		exec mypaint
 
-#bindsym $mod+a			[instance="math"] scratchpad show; [instance="math"] move position center
+bindsym $mod+p			exec --no-startup-id lmc toggle
+#bindsym $mod+Shift+p
+
+bindsym $mod+a			[instance="math"] scratchpad show; [instance="math"] move position center
 bindsym $mod+Shift+a		exec $term -e ncpamixer
 
-bindsym $mod+s			gaps inner current plus 2
-bindsym $mod+Shift+s		gaps inner current minus 2
+bindsym $mod+s			gaps inner current plus 5
+bindsym $mod+Shift+s		gaps inner current minus 5
 
-bindsym $mod+d			exec rofi -show-icons -show drun
+bindsym $mod+d			exec --no-startup-id dmenu_run -nb "$fg" -nf "$bg" -sb "$bg" -sf "$fg"
 bindsym $mod+Shift+d		gaps inner current set 0; gaps outer current set 0
 
 bindsym $mod+f			fullscreen toggle
 ##bindsym $mod+Shift+f
 
-bindsym $mod+g			workspace prev
+bindsym $mod+g			exec --no-startup-id ~/.scripts/dmenu_google.sh
 bindsym $mod+Shift+g		exec --no-startup-id gimp; workspace $ws5
 
 bindsym $mod+h			focus left
@@ -260,28 +178,22 @@ bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
 bindsym $mod+x			exec --no-startup-id ~/.config/i3/lock.sh
-bindsym $mod+Shift+x		exec $shutdown
-
-# Bindings to make the webcam float and stick.
-for_window [title="video0 - mpv"] floating enable
-for_window [title="video0 - mpv"] sticky enable
-for_window [title="video0 - mpv"] border pixel 0
-no_focus [title="video0 - mpv"]
+bindsym $mod+Shift+x		exec --no-startup-id prompt "Are you sure you want to shutdown?" "$shutdown"
 
 bindsym $mod+c			exec --no-startup-id camtoggle
-#bindsym $mod+Shift+c
+##bindsym $mod+Shift+c
 
-bindsym $mod+v			exec $term -e cava -p ~/.cavaconf
+bindsym $mod+v			exec $term -e ncmpcpp -s visualizer
 bindsym $mod+Shift+v		exec projectM-pulseaudio
 
-##bindsym $mod+b			exec $prev
-bindsym $mod+Shift+b		exec --no-startup-id blender; workspace $ws6
+bindsym $mod+b			bar mode toggle
+bindsym $mod+Shift+b		floating toggle; sticky toggle; exec --no-startup-id bottomleft
 
 bindsym $mod+n			exec $term -e newsboat
 ##bindsym $mod+Shift+n
 
-bindsym $mod+m 			exec $music
-bindsym $mod+Shift+m		exec $mute
+bindsym $mod+m 			exec --no-startup-id st -e ncmpcpp
+#bindsym $mod+Shift+m		exec --no-startup-id lmc mute
 
 
 # #---Workspace Bindings---# #
@@ -300,32 +212,21 @@ bindsym $mod+XF86Forward	workspace next
 ##bindsym $mod+Shift+XF86Forward
 bindsym $mod+semicolon		workspace next
 bindsym $mod+apostrophe		split horizontal ;; exec $term
-#bindsym $mod+slash		split vertical ;; exec $term
+bindsym $mod+slash		split vertical ;; exec $term
 bindsym $mod+Shift+slash	kill
 bindsym $mod+backslash		workspace back_and_forth
 
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
+set $ws1 "1: "
+set $ws2 "2: "
+set $ws3 "3: "
+set $ws4 "4: "
+set $ws5 "5: "
 set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-#Specify which monitor the workspace should be
-workspace 1 output LVDS1
-workspace 2 output LVDS1
-workspace 3 output LVDS1
-workspace 4 output LVDS1
-workspace 5 output LVDS1
-workspace 6 output LVDS1
-workspace 7 output VGA1
-workspace 8 output VGA1
-workspace 9 output VGA1
-workspace 10 output VGA1
 # switch to workspace
 bindsym $mod+1		workspace $ws1
 bindsym $mod+2		workspace $ws2
@@ -353,35 +254,59 @@ bindsym $mod+Shift+0	move container to workspace $ws10
 for_window [class="Pinentry"] sticky enable
 for_window [class="sent"] border pixel 0px
 for_window [class="Blender"] move to workspace $ws6
+workspace $ws6 gaps inner 0
+workspace $ws6 gaps outer 0
 for_window [class="marble"] move to workspace $ws7
 for_window [title="GIMP Startup"] move workspace $ws5
 for_window [class="Gimp"] move workspace $ws5
+workspace $ws5 gaps inner 0
+workspace $ws5 gaps outer 0
 for_window [window_role="gimp-dock"] floating disable; move left; resize shrink width 50 px or 50ppt
 for_window [window_role="gimp-toolbox"] floating disable; move right; resize grow width 30 px or 30ppt
 for_window [window_role="GtkFileChooserDialog"] resize shrink height 10 px
 for_window [instance="dl"] move workspace $ws10
 
+# First I have a tmux window used for background scripts.
+# I'll later bind this to mod+u.
+for_window [instance="dropdown"] floating enable
+for_window [instance="dropdown"] resize set 625 400
+for_window [instance="dropdown"] move scratchpad
+for_window [instance="dropdown"] border pixel 5
+# Runs the tmuxinit script, which searches for an earlier tmux instance,
+# otherwise starts a new one (to prevent multiple dropdown sessions).
+exec --no-startup-id st -n dropdown -e tmuxinit
+# Runs neofetch on first tmux screen if installed.
+exec_always --no-startup-id "tmux send-keys -t 0:0 'clear && neofetch 2>/dev/null' Enter"
 
-#workspace $ws6 gaps inner 0
-#workspace $ws6 gaps outer 0
-#workspace $ws5 gaps inner 0
-#workspace $ws5 gaps outer 0
-#workspace $ws8 gaps inner 0
-#workspace $ws8 gaps outer 0
+# Then I have a window running R I use for basic arithmetic
+# I'll later bind this to mod+a.
+for_window [instance="math"] floating enable
+for_window [instance="math"] resize set 800 300
+for_window [instance="math"] move scratchpad
+for_window [instance="math"] border pixel 5
+exec --no-startup-id $term -n math -f mono:pixelsize=24 -e dropdowncalc
+
+# Bindings to make the webcam float and stick.
+for_window [title="mpvfloat"] floating enable
+for_window [title="mpvfloat"] sticky enable
+for_window [title="mpvfloat"] border pixel 0
+no_focus [title="mpvfloat"]
+
+for_window [title="Default - Wine desktop"] floating enable
 
 # #---Function Buttons---# #
-bindsym $mod+F1		exec --no-startup-id mupdf ~/.config/i3/i3_guide.pdf
+bindsym $mod+F1		exec --no-startup-id zathura ~/.config/i3/i3_guide.pdf
 bindsym $mod+F2		restart
-bindsym $mod+F3		exec --no-startup-id arandr
-bindsym $mod+F4		exec --no-startup-id sudo zzz
-#bindsym $mod+F5		exec --no-startup-id $netrefresh
+bindsym $mod+F3		exec --no-startup-id displayselect
+bindsym $mod+F4		exec --no-startup-id $hibernate
+bindsym $mod+F5		exec --no-startup-id $netrefresh
 bindsym $mod+F6		exec --no-startup-id $term -e transmission-remote-cli
 ##bindsym $mod+F7
 ##bindsym $mod+F8
-bindsym $mod+F9		exec --no-startup-id sudo mount -a
-bindsym $mod+F10	exec --no-startup-id screen.sh l ;; exec --no-startup-id ~/.config/polybar/launch.sh
-bindsym $mod+F11	exec --no-startup-id screen.sh v ;; exec --no-startup-id ~/.config/polybar/launch.sh
-bindsym $mod+F12	exec --no-startup-id screen.sh d ;; exec --no-startup-id ~/.config/polybar/launch.sh
+bindsym $mod+F9		exec --no-startup-id dmenumount
+bindsym $mod+F10	exec --no-startup-id dmenuumount
+##bindsym $mod+F11
+##bindsym $mod+F12
 
 
 # #---Arrow Keys---# #
@@ -398,63 +323,35 @@ bindsym $mod+Shift+Right 	move right
 # #---Media Keys---# #
 
 # Volume keys
-bindsym $mod+plus		exec $inc
-bindsym $mod+Shift+plus		exec $biginc
-bindsym $mod+minus 		exec $dec
-bindsym $mod+Shift+minus	exec $bigdec
-bindsym $mod+less 		exec $prev
-bindsym $mod+Shift+less		exec $beg
-bindsym $mod+greater		exec $next
-bindsym $mod+Shift+greater	exec $next
+bindsym $mod+plus		exec --no-startup-id lmc up 5
+bindsym $mod+Shift+plus		exec --no-startup-id lmc up 15
+bindsym $mod+minus 		exec --no-startup-id lmc down 5
+bindsym $mod+Shift+minus	exec --no-startup-id lmc down 15
+bindsym $mod+less 		exec --no-startup-id lmc prev
+bindsym $mod+Shift+less		exec --no-startup-id lmc replay
+bindsym $mod+greater		exec --no-startup-id lmc next
+bindsym $mod+Shift+greater	exec --no-startup-id lmc next
 
 # For advancing forward/backward in an mpd song
-bindsym $mod+bracketleft 	exec $lilbak
-bindsym $mod+Shift+bracketleft 	exec $bigbak
-bindsym $mod+bracketright 	exec $lilfor
-bindsym $mod+Shift+bracketright exec $bigfor
+bindsym $mod+bracketleft 	exec --no-startup-id lmc back 10
+bindsym $mod+Shift+bracketleft 	exec --no-startup-id lmc back 120
+bindsym $mod+bracketright 	exec --no-startup-id lmc forward 10
+bindsym $mod+Shift+bracketright exec --no-startup-id lmc forward 120
 
-# Print screen takes a screenshot.
-# With shift, it takes one only of the given window.
+# For screenshots and recording
 bindsym Print 			exec --no-startup-id scrot
 bindsym Shift+Print 		exec --no-startup-id scrot -u
-
-# For recording audio/video or stop recording. Also toggle screenkey for visual typing.
-bindsym $mod+Print		exec --no-startup-id "killall screenkey || screenkey"
-bindsym $mod+Scroll_Lock	exec $audio
-bindsym $mod+Insert		exec $screencast
-bindsym $mod+Pause		exec $video
+bindsym $mod+Print		exec --no-startup-id dmenurecord
+bindsym $mod+Scroll_Lock	exec --no-startup-id "killall screenkey || screenkey"
 bindsym $mod+Delete		exec $stoprec
-##bindsym XF86Launch1		exec $stoprec
 bindsym XF86Launch1		exec $stoprec & xset dpms force off
-
-# #---Dropdown/Scratchpad Windows---# #
-#Start a scratchpad binded to mod + u and send it to center of the screen
-for_window [instance="dropdown"] floating enable
-for_window [instance="dropdown"] resize set 625 400
-for_window [instance="dropdown"] move scratchpad
-for_window [instance="dropdown"] border pixel 5
-exec_always --no-startup-id "tmux send-keys -t 0:0 'clear && neofetch 2>/dev/null' Enter"
-
-# Make the currently focused window a scratchpad
-bindsym $mod+Shift+e mark "aux_scratchpad" move scratchpad
-bindsym $mod+e [con_mark="aux_scratchpad"] scratchpad show
-
-#for_window [instance="aux_scratchpad"] resize set 625 500
-
-# Then I have a window running R I use for basic arithmetic
-# I'll later bind this to mod+a.
-for_window [instance="math"] floating enable
-for_window [instance="math"] resize set 800 300
-for_window [instance="math"] move scratchpad
-for_window [instance="math"] border pixel 5
-exec --no-startup-id $term -n math -f mono:pixelsize=24 -e dropdowncalc
 
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.
-bindsym XF86AudioMute		exec $mute
-bindsym XF86AudioLowerVolume	exec $dec
-bindsym XF86AudioRaiseVolume	exec $inc
-bindsym XF86PowerOff		exec $shutdown
+bindsym XF86AudioMute		exec --no-startup-id lmc mute
+bindsym XF86AudioLowerVolume	exec --no-startup-id lmc down 5
+bindsym XF86AudioRaiseVolume	exec --no-startup-id lmc up 5
+bindsym XF86PowerOff		exec --no-startup-id prompt "Are you sure you want to shutdown?" "$shutdown"
 ##bindsym XF86Copy		exec
 ##bindsym XF86Open		exec
 ##bindsym XF86Paste		exec
@@ -476,13 +373,13 @@ bindsym XF86MyComputer		exec $term -e ranger
 ##bindsym XF86Back		exec
 ##bindsym XF86Forward		exec
 bindsym XF86Eject		exec sudo umount -R /mnt
-bindsym XF86AudioNext		exec $next
-bindsym XF86AudioPlay		exec $pause
-bindsym XF86AudioPrev		exec $prev
-bindsym XF86AudioStop		exec $pause
-bindsym XF86AudioRecord		exec $audio
-bindsym XF86AudioRewind		exec $lilbak
-bindsym XF86AudioForward	exec $lilfor
+bindsym XF86AudioNext		exec --no-startup-id lmc next
+bindsym XF86AudioPlay		exec --no-startup-id lmc toggle
+bindsym XF86AudioPrev		exec --no-startup-id lmc prev
+bindsym XF86AudioStop		exec --no-startup-id lmc toggle
+##bindsym XF86AudioRecord
+bindsym XF86AudioRewind		exec --no-startup-id lmc back 10
+bindsym XF86AudioForward	exec --no-startup-id lmc forward 10
 ##bindsym XF86Phone		exec
 ##bindsym XF86Tools		exec
 bindsym XF86HomePage		exec $BROWSER https://lukesmith.xyz
@@ -500,7 +397,7 @@ bindsym XF86Reload		restart
 ##bindsym XF86Launch7		exec
 ##bindsym XF86Launch8		exec
 ##bindsym XF86Launch9		exec
-bindsym XF86AudioMicMute	exec $micmute
+#bindsym XF86AudioMicMute	exec $micmute
 ##bindsym XF86TouchpadToggle	exec
 bindsym XF86TouchpadOn		exec --no-startup-id exec synclient TouchpadOff=0
 bindsym XF86TouchpadOff		exec --no-startup-id exec synclient TouchpadOff=1
@@ -516,7 +413,7 @@ bindsym XF86Search		exec $BROWSER https://duckduckgo.com
 bindsym XF86Shop		exec $BROWSER https://ebay.com
 bindsym XF86MonBrightnessDown	exec --no-startup-id xbacklight -dec 15
 bindsym XF86MonBrightnessUp	exec --no-startup-id xbacklight -inc 15
-bindsym XF86AudioMedia		exec $music
+bindsym XF86AudioMedia		exec --no-startup-id st -e ncmpcpp
 bindsym XF86Display		exec --no-startup-id arandr
 #bindsym XF86KbdLightOnOff	exec
 bindsym XF86KbdBrightnessDown	exec --no-startup-id python3.6 ~/.i3/kb-lights.py -
@@ -528,5 +425,6 @@ bindsym XF86Documents		exec $term -e ranger ~/Documents
 ##bindsym XF86Battery		exec
 ##bindsym XF86Bluetooth		exec
 bindsym XF86WLAN		exec $netrefresh
-
+exec_always --no-startup-id notify-send -i ~/.scripts/larbs.png "<b>Bem vindo Matheus</b>" "$(unixtips.sh)" -t 10000
+##COLOR FROM WAL
 

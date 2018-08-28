@@ -1,3 +1,9 @@
+#  _          _          ____            _ _   _     _       _               _
+# | |   _   _| | _____  / ___| _ __ ___ (_) |_| |__ ( )___  | |__   __ _ ___| |__  _ __ ___
+# | |  | | | | |/ / _ \ \___ \| '_ ` _ \| | __| '_ \|// __| | '_ \ / _` / __| '_ \| '__/ __|
+# | |__| |_| |   <  __/  ___) | | | | | | | |_| | | | \__ \ | |_) | (_| \__ \ | | | | | (__
+# |_____\__,_|_|\_\___| |____/|_| |_| |_|_|\__|_| |_| |___/ |_.__/ \__,_|___/_| |_|_|  \___|
+
 stty -ixon
 shopt -s autocd #Allows you to cd into directory merely by typing the directory name.
 
@@ -7,38 +13,25 @@ shopt -s autocd #Allows you to cd into directory merely by typing the directory 
 #	else export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]ROOT\[$(tput setaf 2)\]@\[$(tput setaf 4)\]$(hostname | awk '{print toupper($0)}') \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
 #fi
 
-# Set colors for bash prompt, i don't have a setting for root user to remember me that i am using root
-
-PS1="┌─[\`if [ \$? = 0 ]; then echo \[\e[32m\]✔\[\e[0m\]; else echo \[\e[31m\]✘\[\e[0m\]; fi\`]───[\[\e[01;31m\]\u\[\e[00m\]\[\e[01;32m\]@\H\[\e[00m\]]───[\[\e[1;49;34m\]\W\[\e[0m\]]───[\[\e[1;49;39m\]\$(ls | wc -l) files, \$(ls -lah | grep -m 1 total | sed 's/total //')\[\e[0m\]]\n└───▶ "
-# Import colorscheme from 'wal' asynchronously
-# &   # Run the process in the background.
-# ( ) # Hide shell job control messages.
-#(cat ~/.cache/wal/sequences &)
-
-# Alternative (blocks terminal for 0-3ms)
-#cat ~/.cache/wal/sequences
-#To add support for TTYs this line can be optionally added.
-#source ~/.cache/wal/colors-tty.sh
+export PS1="┌─[\`if [ \$? = 0 ]; then echo \[\e[32m\]✔\[\e[0m\]; else echo \[\e[31m\]✘\[\e[0m\]; fi\`]───[\[\e[01;31m\]\u\[\e[00m\]\[\e[01;32m\]@\H\[\e[00m\]]───[\[\e[1;49;34m\]\W\[\e[0m\]]───[\[\e[1;49;39m\]\$(ls | wc -l) files, \$(ls -lah | grep -m 1 total | sed 's/total //')\[\e[0m\]]\n└───▶ "
 
 #Generic shortcuts:
 alias music="ncmpcpp"
 alias clock="ncmpcpp -s clock"
 alias visualizer="ncmpcpp -s visualizer"
-alias news="newsbeuter"
+alias news="newsboat"
 alias email="neomutt"
 alias files="ranger"
 alias chat="weechat"
 alias audio="ncpamixer"
 alias calender="calcurse"
-alias getmail="offlineimap && notmuch new"
-alias gm="offlineimap && notmuch new"
 
 # System Maintainence
 alias mw="~/.config/mutt/mutt-wizard.sh"
 alias muttwizard="~/.config/mutt/mutt-wizard.sh"
-alias progs="pacman -Qet" # List programs I've installed
+alias progs="(pacman -Qet && pacman -Qm) | sort -u" # List programs I've installed
 alias orphans="pacman -Qdt" # List orphan programs
-alias upgr="neofetch && sudo pacman -Syyu --noconfirm && echo Update complete. | figlet"
+alias upgr="notify-send -i ~/.scripts/larbs.png 'Upgrade started' & neofetch && sudo packer -Syyuv --noconfirm && notify-send -i ~/.scripts/larbs.png 'Obrigador por atualizar Matheus, voce eh o melhor'."
 alias atltime="sudo timedatectl set-timezone America/New_York && i3 restart" # Eastcoast time
 alias tuctime="sudo timedatectl set-timezone America/Phoenix && i3 restart" # Arizona time
 alias sdn="sudo shutdown now"
@@ -50,6 +43,7 @@ alias psref="gpg-connect-agent RELOADAGENT /bye" # Refresh gpg
 
 # Some aliases
 alias p="sudo pacman"
+alias SS="sudo systemctl"
 alias v="vim"
 alias sv="sudo vim"
 alias r="ranger"
@@ -57,8 +51,7 @@ alias sr="sudo ranger"
 alias ka="killall"
 alias g="git"
 alias gitup="git push origin master"
-alias gitpass="git config --global credential.helper cache"
-alias tr="transmission-remote"
+alias trem="transmission-remote"
 alias mkd="mkdir -pv"
 alias rf="source ~/.bashrc"
 alias ref="shortcuts.sh && source ~/.bashrc" # Refresh shortcuts manually and reload bashrc
@@ -70,12 +63,6 @@ weath() { curl wttr.in/$1 ;} # Check the weather (give city or leave blank).
 alias ls='ls -hN --color=auto --group-directories-first'
 alias crep="grep --color=always" # Color grep - highlight desired sequence.
 alias ccat="highlight --out-format=xterm256" #Color cat - print file with syntax highlighting.
-
-# Laptop management
-alias lsc="screen.sh l" # Use laptop screen only
-alias vsc="screen.sh v" # Use VGA only
-alias dsc="screen.sh d" # Use both laptop and VGA screen
-alias debase="sudo umount /home/Shared/Videos & screen.sh l && i3 restart" # Prep for taking my ThinkPad off Ultrabase
 
 # Internet
 alias yt="youtube-dl --add-metadata -ic" # Download video link
@@ -107,13 +94,16 @@ alias lilfor="mpc seek +10"
 alias bigbak="mpc seek -120"
 alias bigfor="mpc seek +120"
 
-#Alias for git repo with dotfiles
-alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+hello-larbs() { sed -i -e '/larbs.png/,$d' ~/.config/i3/config ;}
+source ~/.bash_shortcuts
 source /home/matheus/.bash_shortcuts
 
-#env variables for Android/Cordova stuff
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/tools
-
-#Alias for sudoing the previous command
+#Alias for sudoing previous command
 alias fuck='sudo $(history -p !!)'
+#Alias for dotfiles bare repo
+alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+#history with date and timestamp
+export HISTTIMEFORMAT='%F %T '
+export HISTCONTROL=ignoredups
+
